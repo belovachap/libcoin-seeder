@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
 #include <assert.h>
 
-#include <libcoin-seeder/version.h>
 #include <libcoin-seeder/coin-seeder.h>
 
 int main ()
@@ -26,14 +22,6 @@ int main ()
         uint32_t i = from_little_endian(bytes);
         assert(i == 0xAABBCCDD);
     }
-
-    // message
-/*    {*/
-/*        message_s message = new_message();*/
-/*        assert(message);*/
-/*        byte_s bytes = serialize_message()*/
-/*        free_bytes(bytes);*/
-/*    }*/
 
     return 0;
 }

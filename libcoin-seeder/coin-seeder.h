@@ -22,19 +22,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <libcoin-seeder/export.h>
+#include <libcoin-seeder/bytes.h>
+#include <libcoin-seeder/var-int.h>
 
 typedef int socketfd;
-typedef unsigned char byte;
-
-typedef struct bytes {
-    byte *buffer;
-    int length;
-} bytes_s;
-
-void free_bytes(bytes_s b) {
-    free(b.buffer);
-}
 
 uint32_t MAGIC = 0xE6E8E9E5;
 
@@ -95,60 +86,6 @@ void write_message(socketfd s, message_s m) {
     bytes_s b = serialize_message(m);
     write(s, b.buffer, b.length);
     free_bytes(b);
-}
-
-typedef struct var_int {
-    uint64_t value;
-} var_int_s;
-
-typedef struct parsed_var_int {
-    var_int_s var_int;
-    int parsed_bytes;
-} parsed_var_int_s;
-
-parsed_var_int_s parse_var_int(bytes_s bytes) {
-}
-
-bytes_s serialize_var_int(var_int_s var_int) {
-    int length;
-    byte *buffer;
-    byte *value = (byte *)&(var_int.value);
-    if(var_int.value < 0xFD) {
-        length = 1;
-        buffer = malloc(length);
-        buffer[0] = value[7];
-    }
-    else if (var_int.value <= 0xFFFF){
-        length = 3;
-        buffer = malloc(length);
-        buffer[0] = 0xFD;
-        buffer[1] = value[7];
-        buffer[2] = value[6];
-    }
-    else if (var_int.value <= 0xFFFFFFFF) {
-        length = 5;
-        buffer = malloc(length);
-        buffer[0] = 0xFE;
-        buffer[1] = value[7];
-        buffer[2] = value[6];
-        buffer[3] = value[5];
-        buffer[4] = value[4];
-    }
-    else {
-        length = 9;
-        buffer = malloc(length);
-        buffer[0] = 0xFF;
-        buffer[1] = value[7];
-        buffer[2] = value[6];
-        buffer[3] = value[5];
-        buffer[4] = value[4];
-        buffer[5] = value[3];
-        buffer[6] = value[2];
-        buffer[7] = value[1];
-        buffer[8] = value[0];
-    }
-
-    return (bytes_s){.buffer=buffer, .length=length};
 }
 
 typedef struct var_str {
