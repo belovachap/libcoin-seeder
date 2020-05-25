@@ -13,26 +13,26 @@ static FILE *mytmpfile ();
 
 int main ()
 {
-  char b[256];
+/*  char b[256];*/
 
-  /* Basics.
-   */
-  {
-    FILE *o = tmpfile ();
-    assert (say_hello (o, "World") > 0);
-    rewind (o);
-    assert (fread (b, 1, sizeof (b), o) == 14 &&
-            strncmp (b, "Hello, World!\n", 14) == 0);
-    fclose (o);
-  }
+/*  /* Basics.*/
+/*   */
+/*  {*/
+/*    FILE *o = tmpfile ();*/
+/*    assert (say_hello (o, "World") > 0);*/
+/*    rewind (o);*/
+/*    assert (fread (b, 1, sizeof (b), o) == 14 &&*/
+/*            strncmp (b, "Hello, World!\n", 14) == 0);*/
+/*    fclose (o);*/
+/*  }*/
 
-  /* Empty name.
-   */
-  {
-    FILE *o = tmpfile ();
-    assert (say_hello (o, "") < 0 && errno == EINVAL);
-    fclose (o);
-  }
+/*  /* Empty name.*/
+/*   */
+/*  {*/
+/*    FILE *o = tmpfile ();*/
+/*    assert (say_hello (o, "") < 0 && errno == EINVAL);*/
+/*    fclose (o);*/
+/*  }*/
 
   return 0;
 }
