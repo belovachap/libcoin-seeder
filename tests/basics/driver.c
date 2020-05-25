@@ -13,28 +13,24 @@ static FILE *mytmpfile ();
 
 int main ()
 {
-/*  char b[256];*/
+    // to_little_endian
+    {
+        uchar *le = to_little_endian(0xAABBCCDD);
+        assert(le[0] == 0xDD);
+        assert(le[1] == 0xCC);
+        assert(le[2] == 0xBB);
+        assert(le[3] == 0xAA);
+        free(le);
+    }
 
-/*  /* Basics.*/
-/*   */
-/*  {*/
-/*    FILE *o = tmpfile ();*/
-/*    assert (say_hello (o, "World") > 0);*/
-/*    rewind (o);*/
-/*    assert (fread (b, 1, sizeof (b), o) == 14 &&*/
-/*            strncmp (b, "Hello, World!\n", 14) == 0);*/
-/*    fclose (o);*/
-/*  }*/
+    // from_little_endian
+    {
+        uchar b[4] = {0xDD, 0xCC, 0xBB, 0xAA};
+        uint32_t i = from_little_endian(b);
+        assert(i == 0xAABBCCDD);
+    }
 
-/*  /* Empty name.*/
-/*   */
-/*  {*/
-/*    FILE *o = tmpfile ();*/
-/*    assert (say_hello (o, "") < 0 && errno == EINVAL);*/
-/*    fclose (o);*/
-/*  }*/
-
-  return 0;
+    return 0;
 }
 
 #ifdef _WIN32

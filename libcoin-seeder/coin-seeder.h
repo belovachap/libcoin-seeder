@@ -25,6 +25,10 @@
 #include <libcoin-seeder/export.h>
 
 typedef unsigned char uchar;
+
+uchar *to_little_endian(const uint32_t);
+uint32_t from_little_endian(const uchar *);
+
 typedef int socketfd;
 
 typedef struct message_header {
@@ -38,26 +42,6 @@ typedef struct message {
     message_header_s header;
     uchar *payload;
 } message_s;
-
-uchar *to_little_endian(const uint32_t i) {
-    uchar *b = malloc(4);
-    uchar *pi = (uchar *)&i;
-    b[0] = pi[3];
-    b[1] = pi[2];
-    b[2] = pi[1];
-    b[3] = pi[0];
-    return b;
-}
-
-uint32_t from_little_endian(const uchar *b) {
-    uint32_t i;
-    uchar *pi = (uchar *)&i;
-    pi[0] = b[3];
-    pi[1] = b[2];
-    pi[2] = b[1];
-    pi[3] = b[0];
-    return i;
-}
 
 uchar *serialize_message(const message_s *m) {
     size_t b_size = sizeof(message_header_s) + m->header.length;
