@@ -1,0 +1,6 @@
+$out_root/
+{
+  include libcoin-seeder/
+}
+
+export $out_root/libcoin-seeder/$import.target

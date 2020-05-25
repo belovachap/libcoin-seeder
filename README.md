@@ -1,0 +1,3 @@
+# libcoin-seeder
+
+C library
