@@ -24,103 +24,131 @@
 
 #include <libcoin-seeder/export.h>
 
-typedef unsigned char uchar;
-
-uchar *to_little_endian(const uint32_t);
-uint32_t from_little_endian(const uchar *);
-
 typedef int socketfd;
+typedef unsigned char byte;
 
-typedef struct message_header {
+typedef struct bytes {
+    byte *buffer;
+    int length;
+} bytes_s;
+
+void free_bytes(bytes_s b) {
+    free(b.buffer);
+}
+
+uint32_t MAGIC = 0xE6E8E9E5;
+
+bytes_s to_little_endian(uint32_t);
+uint32_t from_little_endian(bytes_s);
+
+typedef struct message {
     uint32_t magic;
     char command[12];
     uint32_t length;
     uint32_t checksum;
-} message_header_s;
-
-typedef struct message {
-    message_header_s header;
-    uchar *payload;
+    byte *payload;
 } message_s;
 
-uchar *serialize_message(const message_s *m) {
-    size_t b_size = sizeof(message_header_s) + m->header.length;
-    uchar *b = malloc(b_size);
-    memset(b, 0, b_size);
+const int HEADER_LENGTH = 24; // magic + command + length + checksum
 
-    uchar *le = to_little_endian(m->header.magic);
-    memcpy(b, le, 4);
-    free(le);
+message_s new_message(char *command, bytes_s payload) {
+    message_s message = {.magic=MAGIC, .length=payload.length, .payload=payload.buffer};
+    memset(message.command, 0, 12); // 0 pad the command
+    memcpy(message.command, command, strlen(command));
 
-    memcpy(b+4, m->header.command, 12);
+    // Calculate and populate the checksum
 
-    le = to_little_endian(m->header.length);
-    memcpy(b+16, le, 4);
-    free(le);
-
-    le = to_little_endian(m->header.checksum);
-    memcpy(b+20, le, 4);
-    free(le);
-
-    memcpy(b+24, m->payload, m->header.length);
-
-    return b;
+    return message;
 }
 
-void write_message(const socketfd s, const message_s *m) {
-    uchar *b = serialize_message(m);
-    write(s, b, sizeof(message_header_s) + m->header.length);
-    free(b);
+void free_message(message_s message) {
+    free(message.payload);
+}
+
+bytes_s serialize_message(message_s message) {
+    int length = HEADER_LENGTH + message.length;
+    byte *buffer = malloc(length);
+
+    bytes_s le = to_little_endian(message.magic);
+    memcpy(buffer, le.buffer, le.length);
+    free_bytes(le);
+
+    memcpy(buffer+4, message.command, 12);
+
+    le = to_little_endian(message.length);
+    memcpy(buffer+16, le.buffer, le.length);
+    free_bytes(le);
+
+    le = to_little_endian(message.checksum);
+    memcpy(buffer+20, le.buffer, le.length);
+    free_bytes(le);
+
+    memcpy(buffer+HEADER_LENGTH, message.payload, message.length);
+
+    return (bytes_s){.buffer=buffer, .length=length};
+}
+
+message_s *read_message(socketfd s) {
+}
+
+void write_message(socketfd s, message_s m) {
+    bytes_s b = serialize_message(m);
+    write(s, b.buffer, b.length);
+    free_bytes(b);
 }
 
 typedef struct var_int {
     uint64_t value;
-    int _bytes_parsed;
 } var_int_s;
 
-void free_var_int(var_int_s *vi) {
-    free(vi);
+typedef struct parsed_var_int {
+    var_int_s var_int;
+    int parsed_bytes;
+} parsed_var_int_s;
+
+parsed_var_int_s parse_var_int(bytes_s bytes) {
 }
 
-var_int_s *parse_var_int(uchar *b) {
-
-}
-
-uchar *serialize_var_int(var_int_s *vi) {
-    uchar *b;
-    uchar *pv = (uchar *)&(vi->value);
-    if(vi->value < 0xFD) {
-        b = malloc(1);
-        b[0] = pv[0];
+bytes_s serialize_var_int(var_int_s var_int) {
+    int length;
+    byte *buffer;
+    byte *value = (byte *)&(var_int.value);
+    if(var_int.value < 0xFD) {
+        length = 1;
+        buffer = malloc(length);
+        buffer[0] = value[7];
     }
-    else if (vi->value <= 0xFFFF){
-        b = malloc(3);
-        b[0] = 0xFD;
-        b[1] = pv[7]; // value has 8 bytes
-        b[2] = pv[6];
+    else if (var_int.value <= 0xFFFF){
+        length = 3;
+        buffer = malloc(length);
+        buffer[0] = 0xFD;
+        buffer[1] = value[7];
+        buffer[2] = value[6];
     }
-    else if (vi->value <= 0xFFFFFFFF) {
-        b = malloc(5);
-        b[0] = 0xFE;
-        b[1] = pv[7];
-        b[2] = pv[6];
-        b[3] = pv[5];
-        b[4] = pv[4];
+    else if (var_int.value <= 0xFFFFFFFF) {
+        length = 5;
+        buffer = malloc(length);
+        buffer[0] = 0xFE;
+        buffer[1] = value[7];
+        buffer[2] = value[6];
+        buffer[3] = value[5];
+        buffer[4] = value[4];
     }
     else {
-        b = malloc(9);
-        b[0] = 0xFF;
-        b[1] = pv[7];
-        b[2] = pv[6];
-        b[3] = pv[5];
-        b[4] = pv[4];
-        b[5] = pv[3];
-        b[6] = pv[2];
-        b[7] = pv[1];
-        b[8] = pv[0];
+        length = 9;
+        buffer = malloc(length);
+        buffer[0] = 0xFF;
+        buffer[1] = value[7];
+        buffer[2] = value[6];
+        buffer[3] = value[5];
+        buffer[4] = value[4];
+        buffer[5] = value[3];
+        buffer[6] = value[2];
+        buffer[7] = value[1];
+        buffer[8] = value[0];
     }
 
-    return b;
+    return (bytes_s){.buffer=buffer, .length=length};
 }
 
 typedef struct var_str {
@@ -128,16 +156,20 @@ typedef struct var_str {
     char *string;
 } var_str_s;
 
-void free_var_str(var_str_s *vs) {
-    free(vs->string);
-    free(vs);
+typedef struct parsed_var_str {
+    var_str_s var_str;
+    int parsed_bytes;
+} parsed_var_str_s;
+
+void free_var_str(var_str_s var_str) {
+    free(var_str.string);
 }
 
-var_str_s *parse_var_str(uchar *b) {
+parsed_var_str_s parse_var_str(bytes_s bytes) {
 
 }
 
-uchar *serialize_var_str(const var_str_s *vs) {
+bytes_s serialize_var_str(var_str_s var_str) {
 
 }
 
@@ -148,53 +180,50 @@ typedef struct net_addr {
     uint16_t port; // network byte order
 } net_addr_s;
 
-void free_net_addr(net_addr_s *n) {
-    free(n);
+typedef struct parsed_net_addr {
+    net_addr_s net_addr;
+    int parsed_bytes;
+} parsed_net_addr_s;
+
+
+parsed_net_addr_s parse_net_addr(bytes_s bytes, bool include_time) {
 }
 
-net_addr_s *parse_net_addr(uchar *b, bool include_time) {
-
-}
-
-uchar *serialize_net_addr(net_addr_s *n, bool include_time) {
-}
-
-
-message_s *read_message(const socketfd s) {
+bytes_s serialize_net_addr(net_addr_s net_addr, bool include_time) {
 }
 
 typedef struct version_payload {
     int32_t version;
     uint64_t services;
     int64_t timestamp;
-    net_addr_s *addr_recv;
-    net_addr_s *addr_from;
+    net_addr_s addr_recv;
+    net_addr_s addr_from;
     uint64_t nonce;
-    var_str_s *user_agent;
+    var_str_s user_agent;
     int32_t start_height;
     bool relay;
 } version_payload_s;
 
-void free_version_payload(version_payload_s *n) {
-    free_net_addr(n->addr_recv);
-    free_net_addr(n->addr_from);
-    free_var_str(n->user_agent);
-    free(n);
+typedef struct parsed_version_payload {
+    version_payload_s version_payload;
+    int parsed_bytes;
+} parsed_version_payload_s;
+
+void free_version_payload(version_payload_s version_payload) {
+    free_var_str(version_payload.user_agent);
 }
 
-version_payload_s *parse_version_payload(uchar *b) {
+parsed_version_payload_s parse_version_payload(bytes_s bytes) {
     log_error("TODO!");
-    return NULL;
+    return (parsed_version_payload_s){};
 }
 
-uchar *serialize_version_payload(version_payload_s *n) {
+bytes_s serialize_version_payload(version_payload_s version_payload) {
     log_error("TODO!");
-    return NULL;
+    return (bytes_s){};
 }
 
-uint32_t MAGIC = 0xe6e8e9e5;
-
-void write_version_message(const socketfd s) {
+void write_version_message(socketfd s) {
 /*    version_payload_s *vp = malloc(sizeof(version_payload_s));*/
 /*    vp->version = ;*/
 /*    vp->services = ;*/
@@ -213,11 +242,11 @@ void write_version_message(const socketfd s) {
 /*    free_version_payload(vp);*/
 }
 
-void read_verack_message(const socketfd s) {
+void read_verack_message(socketfd s) {
     message_s *m = read_message(s);
 }
 
-void read_version_message(const socketfd s) {
+void read_version_message(socketfd s) {
     message_s *m = read_message(s);
 }
 

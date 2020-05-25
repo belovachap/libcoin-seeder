@@ -2,22 +2,23 @@
 
 #include <errno.h>
 
-uchar *to_little_endian(const uint32_t i) {
-    uchar *b = malloc(4);
-    uchar *pi = (uchar *)&i;
-    b[0] = pi[0];
-    b[1] = pi[1];
-    b[2] = pi[2];
-    b[3] = pi[3];
-    return b;
+bytes_s to_little_endian(uint32_t i) {
+    int length = 4;
+    byte *buffer = malloc(length);
+    byte *pi = (byte *)&i;
+    buffer[0] = pi[0];
+    buffer[1] = pi[1];
+    buffer[2] = pi[2];
+    buffer[3] = pi[3];
+    return (bytes_s){.buffer=buffer, .length=length};
 }
 
-uint32_t from_little_endian(const uchar *b) {
+uint32_t from_little_endian(bytes_s bytes) {
     uint32_t i;
-    uchar *pi = (uchar *)&i;
-    pi[0] = b[0];
-    pi[1] = b[1];
-    pi[2] = b[2];
-    pi[3] = b[3];
+    byte *pi = (byte *)&i;
+    pi[0] = bytes.buffer[0];
+    pi[1] = bytes.buffer[1];
+    pi[2] = bytes.buffer[2];
+    pi[3] = bytes.buffer[3];
     return i;
 }
