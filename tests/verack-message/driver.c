@@ -1,14 +1,13 @@
 #include <assert.h>
 
-#include <libcoin-seeder/bytes.h>
-
-#include <libcoin-seeder/verack-message.h>
+#include <libcoin-seeder/message.h>
 
 int main ()
 {
     // verack_message
     {
-        message_s verack_message = new_verack_message();
+        bytes_s empty = {.buffer=NULL, .length=0};
+        message_s verack_message = new_message("verack", empty);
 
         assert(verack_message.magic == MAGIC);
         assert(verack_message.command[0] == 'v');
