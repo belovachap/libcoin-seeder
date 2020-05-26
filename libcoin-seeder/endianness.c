@@ -1,6 +1,6 @@
-#include <libcoin-seeder/coin-seeder.h>
+#include <stdlib.h>
 
-#include <errno.h>
+#include <libcoin-seeder/endianness.h>
 
 bytes_s to_little_endian(uint32_t i) {
     int length = 4;

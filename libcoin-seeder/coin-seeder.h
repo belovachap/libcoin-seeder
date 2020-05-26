@@ -23,14 +23,12 @@
 #include <arpa/inet.h>
 
 #include <libcoin-seeder/bytes.h>
+#include <libcoin-seeder/endianness.h>
 #include <libcoin-seeder/var-int.h>
 
 typedef int socketfd;
 
 uint32_t MAGIC = 0xE6E8E9E5;
-
-bytes_s to_little_endian(uint32_t);
-uint32_t from_little_endian(bytes_s);
 
 typedef struct message {
     uint32_t magic;

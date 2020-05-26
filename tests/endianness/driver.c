@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include <libcoin-seeder/coin-seeder.h>
+#include <libcoin-seeder/endianness.h>
 
 int main ()
 {
