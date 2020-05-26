@@ -1,3 +1,5 @@
+#pragma once
+
 #include <libcoin-seeder/var-int.h>
 
 typedef struct var_str {
