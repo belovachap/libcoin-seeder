@@ -1,6 +1,7 @@
 int_libs = # Interface dependencies.
 imp_libs = # Implementation dependencies.
 import int_libs += liblog%lib{log}
+import int_libs += libcrypto%lib{crypto}
 
 lib{coin-seeder}: {h c}{** -version} h{version} $imp_libs $int_libs
 

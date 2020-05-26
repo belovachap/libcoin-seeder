@@ -23,7 +23,7 @@ int main ()
         assert(verack_message.command[10] == '\0');
         assert(verack_message.command[11] == '\0');
         assert(verack_message.length == 0);
-        assert(verack_message.checksum == 0x00000000);
+        assert(verack_message.checksum == 0xE2E0F65D);
         assert(verack_message.payload == NULL);
 
         bytes_s bytes = serialize_message(verack_message);
@@ -45,7 +45,7 @@ int main ()
         assert(parsed_message.message.command[10] == '\0');
         assert(parsed_message.message.command[11] == '\0');
         assert(parsed_message.message.length == 0);
-        assert(parsed_message.message.checksum == 0x00000000);
+        assert(parsed_message.message.checksum == 0xE2E0F65D);
         assert(parsed_message.message.payload == NULL);
 
         free_message(parsed_message.message);

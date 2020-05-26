@@ -1,11 +1,21 @@
+#include <openssl/sha.h>
+
 #include <libcoin-seeder/message.h>
 
 message_s new_message(char *command, bytes_s payload) {
-    message_s message = {.magic=MAGIC, .length=payload.length, .payload=payload.buffer};
+    message_s message = {
+        .magic=MAGIC,
+        .length=payload.length,
+        .payload=payload.buffer
+    };
+
     memset(message.command, 0, 12); // 0 pad the command
     memcpy(message.command, command, strlen(command));
 
-    // Calculate and populate the checksum
+    byte obuf[SHA256_DIGEST_LENGTH];
+    SHA256(payload.buffer, payload.length, obuf);
+    SHA256(obuf, SHA256_DIGEST_LENGTH, obuf);
+    memcpy(&message.checksum, obuf, 4);
 
     return message;
 }

@@ -4,6 +4,31 @@
 
 int main ()
 {
-    // See the specific message types for tests that excercise the message
-    // functionality ;)
+    // serialize/parse_message - empty payload
+    {
+        bytes_s empty = {.buffer=NULL, .length=0};
+        message_s message = new_message("testing", empty);
+
+        assert(message.magic == MAGIC);
+        assert(message.command[0] == 't');
+        assert(message.command[1] == 'e');
+        assert(message.command[2] == 's');
+        assert(message.command[3] == 't');
+        assert(message.command[4] == 'i');
+        assert(message.command[5] == 'n');
+        assert(message.command[6] == 'g');
+        assert(message.command[7] == '\0');
+        assert(message.command[8] == '\0');
+        assert(message.command[9] == '\0');
+        assert(message.command[10] == '\0');
+        assert(message.command[11] == '\0');
+        assert(message.length == 0);
+        assert(message.checksum == 0xE2E0F65D);
+        assert(message.payload == NULL);
+    }
+
+    // serialize/parse_message - with payload
+    {
+        message_s message;
+    }
 }
