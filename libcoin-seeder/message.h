@@ -12,9 +12,9 @@
 
 typedef int socketfd;
 
-uint32_t MAGIC = 0xE6E8E9E5;
+static const uint32_t MAGIC = 0xE6E8E9E5;
 
-int HEADER_LENGTH = 24; // magic + command + length + checksum
+static const int HEADER_LENGTH = 24; // magic + command + length + checksum
 
 typedef struct message {
     uint32_t magic;

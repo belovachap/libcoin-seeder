@@ -18,19 +18,19 @@ bytes_s serialize_message(message_s message) {
     int length = HEADER_LENGTH + message.length;
     byte *buffer = malloc(length);
 
-    bytes_s le = to_little_endian(message.magic);
-    memcpy(buffer, le.buffer, le.length);
-    free_bytes(le);
+    byte *le = to_little_endian(message.magic);
+    memcpy(buffer, le, 4);
+    free(le);
 
     memcpy(buffer+4, message.command, 12);
 
     le = to_little_endian(message.length);
-    memcpy(buffer+16, le.buffer, le.length);
-    free_bytes(le);
+    memcpy(buffer+16, le, 4);
+    free(le);
 
     le = to_little_endian(message.checksum);
-    memcpy(buffer+20, le.buffer, le.length);
-    free_bytes(le);
+    memcpy(buffer+20, le, 4);
+    free(le);
 
     memcpy(buffer+HEADER_LENGTH, message.payload, message.length);
 
@@ -38,6 +38,19 @@ bytes_s serialize_message(message_s message) {
 }
 
 parsed_message_s parse_message(bytes_s bytes) {
+    message_s message;
+    message.magic = from_little_endian(bytes.buffer);
+    memcpy(message.command, bytes.buffer+4, 12);
+    message.length = from_little_endian(bytes.buffer+16);
+    message.checksum = from_little_endian(bytes.buffer+20);
+    if (message.length <= 0) {
+        message.payload = NULL;
+    }
+    else {
+        memcpy(message.payload, bytes.buffer+HEADER_LENGTH, message.length);
+    }
+
+    return (parsed_message_s){.message=message, .parsed_bytes=(HEADER_LENGTH + message.length)};
 }
 
 parsed_message_s read_message(socketfd s) {

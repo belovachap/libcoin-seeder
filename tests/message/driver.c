@@ -4,8 +4,6 @@
 
 int main ()
 {
-    // serialize/parse_message
-    {
-        message_s message = {};
-    }
+    // See the specific message types for tests that excercise the message
+    // functionality ;)
 }
