@@ -35,8 +35,7 @@ int main ()
 
     // serialize/parse_message - with payload
     {
-        byte *buffer = malloc(1);
-        buffer[0] = 0x01;
+        byte buffer[1] = {0x01};
         bytes_s bytes = {.buffer=buffer, .length=1};
         message_s message = new_message("testing", bytes);
 
@@ -56,7 +55,5 @@ int main ()
         assert(message.length == 1);
         assert(message.checksum == 0xDCCF129C);
         assert(message.payload == buffer); // takes over buffer pointer
-
-        free_message(message);
     }
 }

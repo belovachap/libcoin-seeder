@@ -1,0 +1,3 @@
+import libs = libcoin-seeder%lib{coin-seeder}
+
+exe{driver}: {h c}{**} $libs testscript{**}
