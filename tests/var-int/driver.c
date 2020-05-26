@@ -1,7 +1,5 @@
 #include <assert.h>
 
-#include <stdbool.h>
-
 #include <libcoin-seeder/var-int.h>
 
 int main ()
@@ -116,6 +114,4 @@ int main ()
 
         free_bytes(bytes);
     }
-
-    return 0;
 }

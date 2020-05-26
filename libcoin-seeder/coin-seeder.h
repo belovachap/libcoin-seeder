@@ -86,28 +86,6 @@ void write_message(socketfd s, message_s m) {
     free_bytes(b);
 }
 
-typedef struct var_str {
-    var_int_s length;
-    char *string;
-} var_str_s;
-
-typedef struct parsed_var_str {
-    var_str_s var_str;
-    int parsed_bytes;
-} parsed_var_str_s;
-
-void free_var_str(var_str_s var_str) {
-    free(var_str.string);
-}
-
-parsed_var_str_s parse_var_str(bytes_s bytes) {
-
-}
-
-bytes_s serialize_var_str(var_str_s var_str) {
-
-}
-
 typedef struct net_addr {
     uint32_t time; // not present in version message
     uint64_t services;
