@@ -10,9 +10,10 @@ int main ()
 {
     // serialize/parse_var_str - empty string
     {
-        var_str_s var_str = new_var_str("");
+        char *string = heap_string("");
+        var_str_s var_str = new_var_str(string);
         assert(var_str.length.value == 0);
-        assert(var_str.string == "");
+        assert(strcmp(var_str.string, "") == 0);
 
         bytes_s bytes = serialize_var_str(var_str);
         assert(bytes.length == 1);
@@ -24,14 +25,16 @@ int main ()
         assert(strcmp(parsed_var_str.var_str.string, "") == 0);
 
         free_bytes(bytes);
-        free_var_str(parsed_var_str.var_str);
+        free_parsed_var_str(parsed_var_str);
+        free_var_str(var_str);
     }
 
     // serialize/parse_var_str - short string
     {
-        var_str_s var_str = new_var_str("Hello, world!");
+        char *string = heap_string("Hello, world!");
+        var_str_s var_str = new_var_str(string);
         assert(var_str.length.value == 13);
-        assert(strcmp(var_str.string, "Hello, world!") == 0);
+        assert(var_str.string == string);
 
         bytes_s bytes = serialize_var_str(var_str);
         assert(bytes.length == 14);
@@ -56,6 +59,7 @@ int main ()
         assert(strcmp(parsed_var_str.var_str.string, "Hello, world!") == 0);
 
         free_bytes(bytes);
-        free_var_str(parsed_var_str.var_str);
+        free_parsed_var_str(parsed_var_str);
+        free_var_str(var_str);
     }
 }

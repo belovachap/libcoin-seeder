@@ -2,6 +2,9 @@
 
 #include <libcoin-seeder/var-int.h>
 
+// Copy a string onto the heap.
+char *heap_string(char *);
+
 typedef struct var_str {
     var_int_s length;
     char *string;
@@ -19,3 +22,5 @@ typedef struct parsed_var_str {
 } parsed_var_str_s;
 
 parsed_var_str_s parse_var_str(bytes_s);
+
+void free_parsed_var_str(parsed_var_str_s);

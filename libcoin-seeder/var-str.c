@@ -4,6 +4,12 @@
 
 #include <libcoin-seeder/var-str.h>
 
+char *heap_string(char *string) {
+    char *heap = malloc(strlen(string)+1);
+    strcpy(heap, string);
+    return heap;
+}
+
 var_str_s new_var_str(char *string) {
     return (var_str_s){.length=strlen(string), .string=string};
 }
@@ -35,4 +41,8 @@ parsed_var_str_s parse_var_str(bytes_s bytes) {
     var_str_s var_str = {.string=string, .length=parsed_var_int.var_int};
 
     return (parsed_var_str_s){.var_str=var_str, .parsed_bytes=parsed_var_int.parsed_bytes+parsed_var_int.var_int.value};
+}
+
+void free_parsed_var_str(parsed_var_str_s parsed_var_str) {
+    free_var_str(parsed_var_str.var_str);
 }
