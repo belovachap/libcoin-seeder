@@ -28,17 +28,17 @@ bytes_s serialize_message(message_s message) {
     int length = HEADER_LENGTH + message.length;
     byte *buffer = malloc(length);
 
-    byte *le = to_little_endian(message.magic);
+    byte *le = uint32_t_to_little_endian(message.magic);
     memcpy(buffer, le, 4);
     free(le);
 
     memcpy(buffer+4, message.command, 12);
 
-    le = to_little_endian(message.length);
+    le = uint32_t_to_little_endian(message.length);
     memcpy(buffer+16, le, 4);
     free(le);
 
-    le = to_little_endian(message.checksum);
+    le = uint32_t_to_little_endian(message.checksum);
     memcpy(buffer+20, le, 4);
     free(le);
 
@@ -49,10 +49,10 @@ bytes_s serialize_message(message_s message) {
 
 parsed_message_s parse_message(bytes_s bytes) {
     message_s message;
-    message.magic = from_little_endian(bytes.buffer);
+    message.magic = uint32_t_from_little_endian(bytes.buffer);
     memcpy(message.command, bytes.buffer+4, 12);
-    message.length = from_little_endian(bytes.buffer+16);
-    message.checksum = from_little_endian(bytes.buffer+20);
+    message.length = uint32_t_from_little_endian(bytes.buffer+16);
+    message.checksum = uint32_t_from_little_endian(bytes.buffer+20);
     if (message.length <= 0) {
         message.payload = NULL;
     }

@@ -1,10 +1,16 @@
 #pragma once
 
+#include <arpa/inet.h>
 #include <stdbool.h>
-
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <libcoin-seeder/bytes.h>
+#include <libcoin-seeder/endianness.h>
+
+char *address_to_ip(char *);
+
+static const int NET_ADDR_LENGTH = 30; // time + services + ip + port
 
 typedef struct net_addr {
     uint32_t time; // not present in version message
@@ -12,6 +18,8 @@ typedef struct net_addr {
     char ip[16];
     uint16_t port; // network byte order
 } net_addr_s;
+
+net_addr_s new_net_addr(uint32_t, uint64_t, char *, uint16_t);
 
 bytes_s serialize_net_addr(net_addr_s, bool);
 

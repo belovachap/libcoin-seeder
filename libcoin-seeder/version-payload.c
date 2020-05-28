@@ -29,9 +29,15 @@ void free_version_payload(version_payload_s version_payload) {
 }
 
 bytes_s serialize_version_payload(version_payload_s version_payload) {
+    bytes_s var_str_bytes = serialize_var_str(version_payload.user_agent);
+    int length = 4 + 8 + 8 + 2 * sizeof(net_addr_s) + 8 + var_str_bytes.length + 4 + 1;
+    byte *buffer = malloc(length);
+
+    return (bytes_s){.length=length, .buffer=buffer};
 }
 
 parsed_version_payload_s parse_version_payload(bytes_s bytes) {
+
 }
 
 void free_parsed_version_payload(parsed_version_payload_s parsed_version_payload) {
