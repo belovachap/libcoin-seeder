@@ -1,5 +1,7 @@
 #pragma once
 
+#include <openssl/sha.h>
+
 #include <stdint.h>
 
 #include <stdlib.h>
@@ -12,7 +14,9 @@
 
 typedef int socketfd;
 
-static const uint32_t MAGIC = 0xE6E8E9E5;
+static const uint32_t MAGIC = 0xE5E9E8E6;
+
+static const int MAX_PAYLOAD_LENGTH = 2 * 1024 * 1024; // 2MB
 
 static const int HEADER_LENGTH = 24; // magic + command + length + checksum
 
