@@ -1,5 +1,3 @@
-#include <openssl/sha.h>
-
 #include <libcoin-seeder/message.h>
 
 message_s new_message(char *command, bytes_s payload) {

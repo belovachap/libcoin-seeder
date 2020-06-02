@@ -2,6 +2,7 @@
 
 // Add a guided tour of the code here ;)
 
+#include <libcoin-seeder/addr-payload.h>
 #include <libcoin-seeder/bytes.h>
 #include <libcoin-seeder/endianness.h>
 #include <libcoin-seeder/message.h>
