@@ -1,6 +1,6 @@
 : 1
 name: libcoin-seeder
-version: 0.1.0-a.0.z
+version: 0.1.0
 summary: coin-seeder C library
 license: proprietary
 description-file: README.md
